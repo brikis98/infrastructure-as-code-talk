@@ -176,6 +176,8 @@ resource "aws_elb" "rails_example_app" {
     unhealthy_threshold = 2
     timeout = 5
     interval = 30
+
+    # The rails-example-app has a health check endpoint at the /status URL
     target = "HTTP:3000/status"
   }
 
