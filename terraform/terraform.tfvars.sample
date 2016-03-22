@@ -6,11 +6,26 @@
 # 3. Fill in the variables below
 #
 
+# The AWS region to deploy to
+region = "us-east-1"
+
+# This is a convenient image available in Docker Hub to test this application. Both v1 and v2 are available as
+# app_version values. To try out your own changes, you'll want to swap in your own image and version here.
 app_image = "brikis98/rails-example-app"
 app_version = "v1"
+
+# The name of a Key Pair that can be used to SSH to each EC2 instance. Use the AWS EC2 console to create the Key Pair:
+# https://console.aws.amazon.com/ec2/v2/home
 key_pair_name = ""
+
+# Specify the VPC to use here. If you're not using custom VPCs and custom subnets, then:
+#
+# 1. Set vpc_id to the id of the "Default" VPC from the VPC list: https://console.aws.amazon.com/vpc/home?region=us-east-1#vpcs:
+#    (e.g. vpc_id = "vpc-123456")
+# 2. Set both subnet_ids lists to the subnet ids (separated with commas) from the subnet list: https://console.aws.amazon.com/vpc/home?region=us-east-1#subnets:
+#    (e.g. elb_subnet_ids = "subnet-123456,subnet-4dkd3414,subnet-344kk3k1")
 vpc_id = ""
 elb_subnet_ids = ""
 ecs_cluster_subnet_ids = ""
-region = ""
+
 
