@@ -1,0 +1,302 @@
+# Configure the AWS Provider
+provider "aws" {
+  region = "${var.region}"
+}
+
+# The ECS Cluster
+resource "aws_ecs_cluster" "example_cluster" {
+  name = "example-cluster"
+
+  # aws_launch_configuration.ecs_instance sets create_before_destroy to true, which means every resource it depends on,
+  # including this one, must also set the create_before_destroy flag to true, or you'll get a cyclic dependency error.
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# The Auto Scaling Group that determines how many EC2 Instances we will be
+# running
+resource "aws_autoscaling_group" "ecs_cluster_instances" {
+  name = "ecs-cluster-instances"
+  min_size = 4
+  max_size = 4
+  launch_configuration = "${aws_launch_configuration.ecs_instance.name}"
+  vpc_zone_identifier = ["${split(",", var.ecs_cluster_subnet_ids)}"]
+
+  tag {
+    key = "Name"
+    value = "ecs-cluster-instances"
+    propagate_at_launch = true
+  }
+}
+
+# The launch configuration for each EC2 Instance that will run in the ECS
+# Cluster
+resource "aws_launch_configuration" "ecs_instance" {
+  name_prefix = "ecs-instance-"
+  instance_type = "t2.micro"
+  key_name = "${var.key_pair_name}"
+  iam_instance_profile = "${aws_iam_instance_profile.ecs_instance.name}"
+  security_groups = ["${aws_security_group.ecs_instance.id}"]
+  image_id = "${lookup(var.ami, var.region)}"
+
+  # A shell script that will execute when on each EC2 instance when it first boots to configure the ECS Agent to talk
+  # to the right ECS cluster
+  user_data = <<EOF
+#!/bin/bash
+echo "ECS_CLUSTER=${aws_ecs_cluster.example_cluster.name}" >> /etc/ecs/ecs.config
+EOF
+
+  # Important note: whenever using a launch configuration with an auto scaling
+  # group, you must set create_before_destroy = true. However, as soon as you
+  # set create_before_destroy = true in one resource, you must also set it in
+  # every resource that it depends on, or you'll get an error about cyclic
+  # dependencies (especially when removing resources). For more info, see:
+  #
+  # https://www.terraform.io/docs/providers/aws/r/launch_configuration.html
+  # https://terraform.io/docs/configuration/resources.html
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# An IAM instance profile we can attach to an EC2 instance
+resource "aws_iam_instance_profile" "ecs_instance" {
+  name = "ecs-instance"
+  roles = ["${aws_iam_role.ecs_instance.name}"]
+
+  # aws_launch_configuration.ecs_instance sets create_before_destroy to true, which means every resource it depends on,
+  # including this one, must also set the create_before_destroy flag to true, or you'll get a cyclic dependency error.
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# An IAM role that we attach to the EC2 Instances in ECS.
+resource "aws_iam_role" "ecs_instance" {
+  name = "ecs-instance"
+  assume_role_policy = <<EOF
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+
+  # aws_iam_instance_profile.ecs_instance sets create_before_destroy to true, which means every resource it depends on,
+  # including this one, must also set the create_before_destroy flag to true, or you'll get a cyclic dependency error.
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# IAM policy we add to our EC2 Instance Role that allows an ECS Agent running
+# on the EC2 Instance to communicate with the ECS cluster
+resource "aws_iam_role_policy" "ecs_cluster_permissions" {
+  name = "ecs-cluster-permissions"
+  role = "${aws_iam_role.ecs_instance.id}"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecs:CreateCluster",
+        "ecs:DeregisterContainerInstance",
+        "ecs:DiscoverPollEndpoint",
+        "ecs:Poll",
+        "ecs:RegisterContainerInstance",
+        "ecs:StartTelemetrySession",
+        "ecs:Submit*"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}
+EOF
+}
+
+# Security group that controls what network traffic is allowed to go in and out of each EC2 instance in the cluster
+resource "aws_security_group" "ecs_instance" {
+  name = "ecs-instance"
+  description = "Security group for the EC2 instances in the ECS cluster"
+  vpc_id = "${var.vpc_id}"
+
+  # Outbound Everything
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Inbound HTTP from anywhere
+  ingress {
+    from_port = 3000
+    to_port = 3000
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Inbound SSH from anywhere
+  ingress {
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # aws_launch_configuration.ecs_instance sets create_before_destroy to true, which means every resource it depends on,
+  # including this one, must also set the create_before_destroy flag to true, or you'll get a cyclic dependency error.
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# The load balancer that distributes load between the EC2 Instances
+resource "aws_elb" "rails_example_app" {
+  name = "rails-example-app"
+  subnets = ["${split(",", var.elb_subnet_ids)}"]
+  security_groups = ["${aws_security_group.rails_example_app_elb.id}"]
+  cross_zone_load_balancing = true
+
+  health_check {
+    healthy_threshold = 2
+    unhealthy_threshold = 2
+    timeout = 5
+    interval = 30
+    target = "HTTP:3000/status"
+  }
+
+  listener {
+    instance_port = 3000
+    instance_protocol = "http"
+    lb_port = 80
+    lb_protocol = "http"
+  }
+}
+
+# The securty group that controls what traffic can go in and out of the ELB
+resource "aws_security_group" "rails_example_app_elb" {
+  name = "rails-example-app-elb"
+  description = "The security group for the rails-example-app ELB"
+  vpc_id = "${var.vpc_id}"
+
+  # Outbound Everything
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Inbound HTTP from anywhere
+  ingress {
+    from_port = 80
+    to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# The ECS Task that specifies what Docker containers we need to run the rails-example-app
+resource "aws_ecs_task_definition" "rails_example_app" {
+  family = "rails-example-app"
+  container_definitions = <<EOF
+[
+  {
+    "name": "rails-example-app",
+    "image": "${var.app_image}:${var.app_version}",
+    "cpu": 1024,
+    "memory": 768,
+    "essential": true,
+    "portMappings": [
+      {
+        "containerPort": 3000,
+        "hostPort": 3000,
+        "protocol": "tcp"
+      }
+    ],
+    "environment": [
+      {"name": "RAILS_ENV", "value": "production"}
+    ]
+  }
+]
+EOF
+}
+
+# A long-running ECS Service for the rails-example-app Task
+resource "aws_ecs_service" "rails_example_app" {
+  name = "rails-example-app"
+  cluster = "${aws_ecs_cluster.example_cluster.id}"
+  task_definition = "${aws_ecs_task_definition.rails_example_app.arn}"
+  depends_on = ["aws_iam_role_policy.ecs_service_policy"]
+  desired_count = 4
+  deployment_minimum_healthy_percent = 50
+  iam_role = "${aws_iam_role.ecs_service_role.arn}"
+
+  load_balancer {
+    elb_name = "${aws_elb.rails_example_app.id}"
+    container_name = "rails-example-app"
+    container_port = 3000
+  }
+}
+
+# An IAM Role that we attach to ECS Services. See the
+# aws_aim_role_policy below to see what permissions this role has.
+resource "aws_iam_role" "ecs_service_role" {
+  name = "ecs-service-role"
+  assume_role_policy = <<EOF
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ecs.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+# IAM Policy that allows an ECS Service to communicate with EC2 Instances.
+resource "aws_iam_role_policy" "ecs_service_policy" {
+  name = "ecs-service-policy"
+  role = "${aws_iam_role.ecs_service_role.id}"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "elasticloadbalancing:Describe*",
+        "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+        "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+        "ec2:Describe*",
+        "ec2:AuthorizeSecurityGroupIngress"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}
+EOF
+}
+

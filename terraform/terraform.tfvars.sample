@@ -1,0 +1,16 @@
+#
+# Instructions:
+#
+# 1. Rename this file to terraform.tfvars
+# 2. Set your AWS credentials using the environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+# 3. Fill in the variables below
+#
+
+app_image = "brikis98/rails-example-app"
+app_version = "v1"
+key_pair_name = ""
+vpc_id = ""
+elb_subnet_ids = ""
+ecs_cluster_subnet_ids = ""
+region = ""
+

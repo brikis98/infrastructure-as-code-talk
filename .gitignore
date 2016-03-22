@@ -1,0 +1,21 @@
+# Ignore bundler config.
+/.bundle
+
+# Ignore the default SQLite database.
+/db/*.sqlite3
+/db/*.sqlite3-journal
+
+# Ignore all logfiles and tempfiles.
+/log/*
+!/log/.keep
+/tmp
+
+# The Terraform code in this app is just an example, so ignore any files that may store Terraform state from a real
+# deployment.
+terraform.tfvars
+.terraform
+*.tfstate
+*.tfstate.backup
+
+# Ignore OS X files
+.DS_Store

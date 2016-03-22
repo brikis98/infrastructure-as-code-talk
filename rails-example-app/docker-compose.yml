@@ -1,0 +1,6 @@
+rails:
+  image: brikis98/rails-example-app
+  volumes:
+    - .:/usr/src/app
+  ports:
+    - "3000:3000"
