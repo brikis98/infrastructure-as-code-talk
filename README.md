@@ -56,7 +56,7 @@ this code in the real world, you'll want to create your own Docker image as foll
 
 1. `cd rails-example-app`
 2. `docker build -t your_username/rails-example-app .`
-   * Fill in `your_username` with your [Docker Hub](https://hub.docker.com/) username)
+   * Replace `your_username` with your actual [Docker Hub](https://hub.docker.com/) username.
 3. `docker login`
 4. `docker push your_username/rails-example-app`
 5. Set the `app_image` variable in `terraform.tfvars` to `your_username/rails-example-app`.
@@ -80,7 +80,7 @@ To build a new version of the Docker image:
 
 Note: It's a good idea to set up a CI job to do these steps for you automatically after every commit.
 
-### Deploy the new DOcker image with Terraform
+### Deploy the new Docker image with Terraform
 
 To deploy this new version:
 
