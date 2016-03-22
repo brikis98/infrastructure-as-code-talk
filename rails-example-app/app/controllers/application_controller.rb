@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   # Example endpoint
   def index
-    @text = "Goodbye, World"
+    @text = "Hello, World v1"
   end
 
   # This action is used for health checks. It should return a 200 OK when the app is up and ready to serve requests.

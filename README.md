@@ -10,7 +10,9 @@ It consists of:
    (ECS)](https://aws.amazon.com/ecs/) with an [Elastic Load Balancer (ELB)](https://aws.amazon.com/elasticloadbalancing/)
    in front of it.
 
-**Note*: This repo is for demonstration purposes only and should NOT be used to run anything important.
+**Note*: This repo is for demonstration purposes only and should NOT be used to run anything important. For
+production-ready version of these templates, and many other types of infrastructure, check out
+[Atomic Squirrel](http://atomic-squirrel.net/).
 
 ## How to run the Rails app locally
 
