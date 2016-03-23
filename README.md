@@ -9,20 +9,20 @@ It consists of:
 2. An example [rails-frontend microservice](./rails-frontend) that makes an HTTP call to the sinatra-backend and
    renders the result as HTML. This app includes a [Dockerfile](./rails-frontend/Dockerfile) to package it as a Docker
    container.
-3. A [docker-compose.yml](./docker-compose.yml) file to deploy Docker containers so you can see how the two
-   microservices work together in the development environment. We are using [Docker
-   Links](https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/) as a very lightweight
-   "service discovery" mechanism that allows the services to communicate with each other.
-4. [Terraform templates](./terraform-templates) to deploy the Docker containers for both services on Amazon's
+3. A [docker-compose.yml](./docker-compose.yml) file to deploy both Docker containers so you can see how the two
+   microservices work together in the development environment. To allow the services to talk to each other, we are
+   using [Docker Links](https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/) as a simple
+   "service discovery" mechanism.
+4. [Terraform templates](./terraform-templates) to deploy both Docker containers on Amazon's
    [EC2 Container Service (ECS)](https://aws.amazon.com/ecs/) so you can see how the two microservices work together in
-   the production environment. We deploy an [Elastic Load Balancer (ELB)](https://aws.amazon.com/elasticloadbalancing/)
-   in front of each service and use Terraform to pass through the ELB details using the same environment variables as
-   Docker Links as a very lightweight "service discovery" mechanism that allows the services to communicate with each
-   other.
+   the production environment. To allow the services to talk to each other, we deploy an [Elastic Load Balancer
+   (ELB)](https://aws.amazon.com/elasticloadbalancing/) in front of each service and use Terraform to pass the ELB
+   URLs between services. We are using the same environment variables as Docker Links, so this acts as a simple
+   "service discovery" mechanism that works in both dev and prod.
 
 **Note**: This repo is for demonstration purposes only and should NOT be used to run anything important. For
-production-ready version of these templates and many other types of infrastructure (e.g. using
-[Consul](https://www.consul.io/) for proper service discovery), check out [Atomic Squirrel](http://atomic-squirrel.net/).
+production-ready version of these templates and many other types of infrastructure (e.g. using a more robust service
+discovery mechanism such as [Consul](https://www.consul.io/)), check out [Atomic Squirrel](http://atomic-squirrel.net/).
 
 ## How to run the microservices locally
 
@@ -54,9 +54,7 @@ Hub account](https://hub.docker.com/r/brikis98/rails-example-app/) to make it ea
 Obviously, in the real world, you'll want to use your own images instead.
 
 Follow Docker's documentation to [create your own Docker
-images](https://docs.docker.com/engine/userguide/containers/dockerimages/). Each time you want to deploy, build an
-image with a new tag (or better yet, have a CI job build the image after every commit) and fill in the new image id and
-tag in:
+images](https://docs.docker.com/engine/userguide/containers/dockerimages/) and fill in the new image id and tag in:
 
 1. `docker-compose.yml`: the `image` attribute for `rails_frontend` or `sinatra_backend`.
 2. `terraform-templates/terraform.tfvars`: the `rails_frontend_image` and `rails_frontend_version` or
