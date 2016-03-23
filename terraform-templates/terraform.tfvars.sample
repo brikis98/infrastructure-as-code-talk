@@ -9,10 +9,12 @@
 # The AWS region to deploy to
 region = "us-east-1"
 
-# This is a convenient image available in Docker Hub to test this application. Both v1 and v2 are available as
-# app_version values. To try out your own changes, you'll want to swap in your own image and version here.
-app_image = "brikis98/rails-example-app"
-app_version = "v1"
+# These are convenient images available in Docker Hub to test this application. To deploy your own images, fill in the
+# image names and versions here
+rails_frontend_image = "brikis98/rails-frontend"
+rails_frontend_version = "v1"
+sinatra_backend_image = "brikis98/sinatra-backend"
+sinatra_backend_version = "v1"
 
 # The name of a Key Pair that can be used to SSH to each EC2 instance. Use the AWS EC2 console to create the Key Pair:
 # https://console.aws.amazon.com/ec2/v2/home

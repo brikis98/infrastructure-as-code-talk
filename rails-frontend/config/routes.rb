@@ -6,5 +6,5 @@ Rails.application.routes.draw do
   root 'application#index'
 
   # This URL is used for health checks
-  get 'status' => 'application#status'
+  get 'health' => 'application#health'
 end

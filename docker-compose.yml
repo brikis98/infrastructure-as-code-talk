@@ -1,0 +1,19 @@
+rails_frontend:
+  image: brikis98/rails-frontend
+  volumes:
+    - ./rails-frontend:/usr/src/app
+  ports:
+    - "3000:3000"
+  environment:
+    - RAILS_ENV=development
+  links:
+    - sinatra_backend:sinatra_backend
+
+sinatra_backend:
+  image: brikis98/sinatra-backend
+  volumes:
+    - ./sinatra-backend:/usr/src/app
+  ports:
+    - "4567:4567"
+  environment:
+    - RACK_ENV=development

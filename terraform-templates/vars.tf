@@ -1,9 +1,27 @@
-variable "app_image" {
-  description = "The name of the Docker image to deploy (e.g. brikis98/rails-example-app)"
+variable "rails_frontend_image" {
+  description = "The name of the Docker image to deploy for the Rails frontend (e.g. brikis98/rails-frontend)"
 }
 
-variable "app_version" {
-  description = "The version (i.e. tag) of the Docker container to deploy (e.g. latest, 12345)"
+variable "rails_frontend_version" {
+  description = "The version (i.e. tag) of the Docker container to deploy for the Rails frontend (e.g. latest, 12345)"
+}
+
+variable "rails_frontend_port" {
+  description = "The port the Rails frontend Docker container listens on for HTTP requests (e.g. 3000)"
+  default = 3000
+}
+
+variable "sinatra_backend_image" {
+  description = "The name of the Docker image to deploy for the Sinatra backend (e.g. brikis98/sinatra-backend)"
+}
+
+variable "sinatra_backend_version" {
+  description = "The version (i.e. tag) of the Docker container to deploy for the Sinatra backend (e.g. latest, 12345)"
+}
+
+variable "sinatra_backend_port" {
+  description = "The port the Sinatra backend Docker container listens on for HTTP requests (e.g. 4567)"
+  default = 4567
 }
 
 variable "key_pair_name" {
@@ -15,7 +33,7 @@ variable "vpc_id" {
 }
 
 variable "elb_subnet_ids" {
-  description = "A comma-separated list of subnets where the ELB should be deployed"
+  description = "A comma-separated list of subnets where the ELBs should be deployed"
 }
 
 variable "ecs_cluster_subnet_ids" {
