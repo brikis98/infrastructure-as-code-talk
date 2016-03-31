@@ -52,6 +52,8 @@ variable "ami" {
   default = {
     us-east-1 = "ami-a98cb2c3"
     us-west-1 = "ami-bafd8dda"
+    eu-central-1 = "ami-376c8958"
+    eu-west-1 = "ami-2989375a"
   }
 }
 
