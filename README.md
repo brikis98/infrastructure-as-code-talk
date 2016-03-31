@@ -1,7 +1,8 @@
 # Infrastructure as Code Talk
 
-This repo contains the sample code for the talk [Infrastructure-as-code in the real world: running microservices on AWS
-with Docker, ECS, and Terraform](http://www.incontrodevops.it/sessions/infrastructure-as-code-in-the-real-world-running-microservices-on-aws-with-docker-ecs-and-terraform/).
+This repo contains the sample code for the talk [Infrastructure-as-code: running microservices on AWS with Docker,
+Terraform, and ECS](http://www.ybrikman.com/writing/2016/03/31/infrastructure-as-code-microservices-aws-docker-terraform-ecs/).
+
 It consists of:
 
 1. An example [sinatra-backend microservice](./sinatra-backend) that just returns the text "Hello, World". This app
@@ -59,3 +60,8 @@ images](https://docs.docker.com/engine/userguide/containers/dockerimages/) and f
 1. `docker-compose.yml`: the `image` attribute for `rails_frontend` or `sinatra_backend`.
 2. `terraform-templates/terraform.tfvars`: the `rails_frontend_image` and `rails_frontend_version` or
    `sinatra_backend_image` and `sinatra_backend_version` variables.
+
+## More info
+
+For more info, check out the talk [Infrastructure-as-code: running microservices on AWS with Docker, Terraform, and
+ECS](http://www.ybrikman.com/writing/2016/03/31/infrastructure-as-code-microservices-aws-docker-terraform-ecs/).
