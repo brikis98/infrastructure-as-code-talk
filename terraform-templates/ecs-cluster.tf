@@ -18,8 +18,8 @@ resource "aws_ecs_cluster" "example_cluster" {
 # running
 resource "aws_autoscaling_group" "ecs_cluster_instances" {
   name = "ecs-cluster-instances"
-  min_size = 4
-  max_size = 4
+  min_size = 5
+  max_size = 5
   launch_configuration = "${aws_launch_configuration.ecs_instance.name}"
   vpc_zone_identifier = ["${split(",", var.ecs_cluster_subnet_ids)}"]
 
