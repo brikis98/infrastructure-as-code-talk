@@ -64,4 +64,6 @@ images](https://docs.docker.com/engine/userguide/containers/dockerimages/) and f
 ## More info
 
 For more info, check out the talk [Infrastructure-as-code: running microservices on AWS with Docker, Terraform, and
-ECS](http://www.ybrikman.com/writing/2016/03/31/infrastructure-as-code-microservices-aws-docker-terraform-ecs/).
+ECS](http://www.ybrikman.com/writing/2016/03/31/infrastructure-as-code-microservices-aws-docker-terraform-ecs/),
+including [the video](https://vimeo.com/167706949) and
+[slides](http://www.slideshare.net/brikis98/infrastructure-as-code-running-microservices-on-aws-using-docker-terraform-and-ecs?ref=http://www.ybrikman.com/writing/2016/03/31/infrastructure-as-code-microservices-aws-docker-terraform-ecs/) .
