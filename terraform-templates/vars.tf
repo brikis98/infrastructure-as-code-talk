@@ -50,10 +50,10 @@ variable "ami" {
   # https://aws.amazon.com/marketplace/ordering?productId=4ce33fd9-63ff-4f35-8d3a-939b641f1931. Note that the very first
   # time, you have to accept the terms and conditions on that page or the EC2 instances will fail to launch!
   default = {
-    us-east-1 = "ami-a98cb2c3"
-    us-west-1 = "ami-bafd8dda"
-    eu-central-1 = "ami-376c8958"
-    eu-west-1 = "ami-2989375a"
+    us-east-1     = "ami-5d1b984a"
+    us-west-1     = "ami-e4b5f384"
+    eu-central-1  = "ami-c9f603a6"
+    eu-west-1     = "ami-64385917"
   }
 }
 
