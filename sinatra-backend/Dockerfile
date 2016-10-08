@@ -1,9 +1,11 @@
-FROM gliderlabs/alpine:3.3
+FROM gliderlabs/alpine:3.4
 MAINTAINER Yevgeniy Brikman <jim@ybrikman.com>
 
 # Install Sinatra
-RUN apk --no-cache add ruby ruby-dev
-RUN gem install sinatra --no-ri --no-rdoc
+RUN apk --update upgrade &&\
+    apk --no-cache add curl ca-certificates &&\
+    apk --no-cache add ruby ruby-dev &&\
+    gem install sinatra --no-ri --no-rdoc
 
 # Source code should be in the /usr/src/app folder
 RUN mkdir -p /usr/src/app
