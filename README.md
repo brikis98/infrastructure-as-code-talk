@@ -50,8 +50,8 @@ To deploy the microservices to your AWS account, see the [terraform-templates RE
 ## How to use your own Docker images
 
 By default, [docker-compose.yml](./docker-compose.yml) and the [terraform-templates](./terraform-templates) are using
-the `brikis98/rails-frontend` and `brikis98/sinatra-backend` Docker images. These are images I pushed to my [Docker
-Hub account](https://hub.docker.com/r/brikis98/rails-example-app/) to make it easy for you to try this repo quickly.
+the `gruntwork/rails-frontend` and `gruntwork/sinatra-backend` Docker images. These are images I pushed to the [Gruntwork Docker
+Hub account](https://hub.docker.com/r/gruntwork/rails-example-app/) to make it easy for you to try this repo quickly.
 Obviously, in the real world, you'll want to use your own images instead.
 
 Follow Docker's documentation to [create your own Docker
