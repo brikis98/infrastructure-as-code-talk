@@ -2,13 +2,14 @@
 /.bundle
 
 # Ignore the default SQLite database.
-/db/*.sqlite3
-/db/*.sqlite3-journal
+rails-frontend/db/*.sqlite3
+rails-frontend/db/*.sqlite3-journal
 
 # Ignore all logfiles and tempfiles.
 /log/*
 !/log/.keep
 /tmp
+rails-frontend/tmp
 
 # Rake files
 .generators
