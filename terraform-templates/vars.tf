@@ -1,5 +1,5 @@
 variable "rails_frontend_image" {
-  description = "The name of the Docker image to deploy for the Rails frontend (e.g. brikis98/rails-frontend)"
+  description = "The name of the Docker image to deploy for the Rails frontend (e.g. gruntwork/rails-frontend)"
 }
 
 variable "rails_frontend_version" {
@@ -12,7 +12,7 @@ variable "rails_frontend_port" {
 }
 
 variable "sinatra_backend_image" {
-  description = "The name of the Docker image to deploy for the Sinatra backend (e.g. brikis98/sinatra-backend)"
+  description = "The name of the Docker image to deploy for the Sinatra backend (e.g. gruntwork/sinatra-backend)"
 }
 
 variable "sinatra_backend_version" {

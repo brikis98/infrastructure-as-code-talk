@@ -1,5 +1,5 @@
 rails_frontend:
-  image: brikis98/rails-frontend
+  image: gruntwork/rails-frontend
   volumes:
     - ./rails-frontend:/usr/src/app
   ports:
@@ -10,7 +10,7 @@ rails_frontend:
     - sinatra_backend:sinatra_backend
 
 sinatra_backend:
-  image: brikis98/sinatra-backend
+  image: gruntwork/sinatra-backend
   volumes:
     - ./sinatra-backend:/usr/src/app
   ports:
