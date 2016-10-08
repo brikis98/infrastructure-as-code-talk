@@ -1,5 +1,5 @@
 FROM gliderlabs/alpine:3.4
-MAINTAINER Yevgeniy Brikman <jim@ybrikman.com>
+MAINTAINER Gruntwork <info@gruntwork.io>
 
 # Install Sinatra
 RUN apk --update upgrade &&\
