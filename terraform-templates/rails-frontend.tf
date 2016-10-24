@@ -1,7 +1,7 @@
 # The load balancer that distributes load between the EC2 Instances
 resource "aws_elb" "rails_frontend" {
   name = "rails-frontend"
-  subnets = ["${split(",", var.elb_subnet_ids)}"]
+  subnets = ["${var.elb_subnet_ids}"]
   security_groups = ["${aws_security_group.rails_frontend_elb.id}"]
   cross_zone_load_balancing = true
 

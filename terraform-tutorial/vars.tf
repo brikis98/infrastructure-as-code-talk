@@ -1,3 +1,3 @@
-# variable "name" {
-#   description = "Name of EC2 instance"
-# }
+//variable "name" {
+//  description = "Name of EC2 instance"
+//}

@@ -15,16 +15,16 @@ your credits, running this code may cost you money.
 1. Sign up for an [AWS account](https://aws.amazon.com/). If this is your first time using AWS Marketplace, head over
    to the [ECS AMI Marketplace page](https://aws.amazon.com/marketplace/ordering?productId=4ce33fd9-63ff-4f35-8d3a-939b641f1931)
    and accept the terms of service.
-2. Install [Terraform](https://www.terraform.io/).
-3. `cd terraform-templates`
-4. Rename `terraform.tfvars.sample` to `terraform.tfvars` and follow the instructions in the file to set up your
-   variables.
+1. Install [Terraform](https://www.terraform.io/). Minimum version 0.7.0.
+1. `cd terraform-templates`
+1. Open `vars.tf`, set the environment variables specified at the top of the file, and fill in any other variables that
+   don't have a default.
 
 ### Deploying
 
 1. `terraform plan`
-2. If the plan looks good, run `terraform apply` to deploy the code into your AWS account.
-3. Wait a few minutes for everything to deploy. You can monitor the state of the ECS cluster using the [ECS
+1. If the plan looks good, run `terraform apply` to deploy the code into your AWS account.
+1. Wait a few minutes for everything to deploy. You can monitor the state of the ECS cluster using the [ECS
    Console](https://console.aws.amazon.com/ecs/home).
 
 After `terraform apply` completes, it will output the URLs of the ELBs of the rails-frontend and sinatra-backend apps.
@@ -38,4 +38,4 @@ Every time you want to deploy a new version of one of the microservices, you nee
    commit). Set the `rails_frontend_image` and `rails_frontend_version` or `sinatra_backend_image` and
    `sinatra_backend_version` variables in `terraform.tfvars` to the image name and version of the new Docker image you
    just created.
-2. Deploy the new Docker image with Terraform by following the "Deploying" instructions above.
+1. Deploy the new Docker image with Terraform by following the "Deploying" instructions above.

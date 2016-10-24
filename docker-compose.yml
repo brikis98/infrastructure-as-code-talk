@@ -7,7 +7,7 @@ rails_frontend:
   environment:
     - RAILS_ENV=development
   links:
-    - sinatra_backend:sinatra_backend
+    - sinatra_backend
 
 sinatra_backend:
   image: gruntwork/sinatra-backend
