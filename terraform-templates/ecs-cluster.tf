@@ -5,13 +5,7 @@ provider "aws" {
 
 # The ECS Cluster
 resource "aws_ecs_cluster" "example_cluster" {
-  name = "example-cluster"
-
-  # aws_launch_configuration.ecs_instance sets create_before_destroy to true, which means every resource it depends on,
-  # including this one, must also set the create_before_destroy flag to true, or you'll get a cyclic dependency error.
-  lifecycle {
-    create_before_destroy = true
-  }
+  name = "${var.ecs_cluster_name}"
 }
 
 # The Auto Scaling Group that determines how many EC2 Instances we will be
@@ -56,7 +50,7 @@ resource "aws_launch_configuration" "ecs_instance" {
   # to the right ECS cluster
   user_data = <<EOF
 #!/bin/bash
-echo "ECS_CLUSTER=${aws_ecs_cluster.example_cluster.name}" >> /etc/ecs/ecs.config
+echo "ECS_CLUSTER=${var.ecs_cluster_name}" >> /etc/ecs/ecs.config
 EOF
 
   # Important note: whenever using a launch configuration with an auto scaling

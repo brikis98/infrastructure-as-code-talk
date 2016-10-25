@@ -1,51 +1,3 @@
-# The load balancer that distributes load between the EC2 Instances
-resource "aws_elb" "rails_frontend" {
-  name = "rails-frontend"
-  subnets = ["${var.elb_subnet_ids}"]
-  security_groups = ["${aws_security_group.rails_frontend_elb.id}"]
-  cross_zone_load_balancing = true
-
-  health_check {
-    healthy_threshold = 2
-    unhealthy_threshold = 2
-    timeout = 5
-    interval = 30
-
-    # The rails-frontend has a health check endpoint at the /health URL
-    target = "HTTP:${var.rails_frontend_port}/health"
-  }
-
-  listener {
-    instance_port = "${var.rails_frontend_port}"
-    instance_protocol = "http"
-    lb_port = 80
-    lb_protocol = "http"
-  }
-}
-
-# The securty group that controls what traffic can go in and out of the ELB
-resource "aws_security_group" "rails_frontend_elb" {
-  name = "rails-frontend-elb"
-  description = "The security group for the rails-frontend ELB"
-  vpc_id = "${var.vpc_id}"
-
-  # Outbound Everything
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Inbound HTTP from anywhere
-  ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
 # The ECS Task that specifies what Docker containers we need to run the rails-frontend.
 # Note the SINATRA_BACKEND_PORT environment variable which we point to the sinatra-backend ELB as a simple "service
 # discovery" mechanism. The format replicates the behavior of Docker links, which we use in the docker-compose.yml file,
@@ -91,5 +43,53 @@ resource "aws_ecs_service" "rails_frontend" {
     elb_name = "${aws_elb.rails_frontend.id}"
     container_name = "rails-frontend"
     container_port = "${var.rails_frontend_port}"
+  }
+}
+
+# The load balancer that distributes load between the EC2 Instances
+resource "aws_elb" "rails_frontend" {
+  name = "rails-frontend"
+  subnets = ["${var.elb_subnet_ids}"]
+  security_groups = ["${aws_security_group.rails_frontend_elb.id}"]
+  cross_zone_load_balancing = true
+
+  health_check {
+    healthy_threshold = 2
+    unhealthy_threshold = 2
+    timeout = 5
+    interval = 30
+
+    # The rails-frontend has a health check endpoint at the /health URL
+    target = "HTTP:${var.rails_frontend_port}/health"
+  }
+
+  listener {
+    instance_port = "${var.rails_frontend_port}"
+    instance_protocol = "http"
+    lb_port = 80
+    lb_protocol = "http"
+  }
+}
+
+# The securty group that controls what traffic can go in and out of the ELB
+resource "aws_security_group" "rails_frontend_elb" {
+  name = "rails-frontend-elb"
+  description = "The security group for the rails-frontend ELB"
+  vpc_id = "${var.vpc_id}"
+
+  # Outbound Everything
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Inbound HTTP from anywhere
+  ingress {
+    from_port = 80
+    to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }

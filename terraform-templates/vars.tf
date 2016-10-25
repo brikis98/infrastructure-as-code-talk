@@ -59,6 +59,11 @@ variable "sinatra_backend_version" {
   default = "v1"
 }
 
+variable "ecs_cluster_name" {
+  description = "What to name the ECS Cluster"
+  default = "example-cluster"
+}
+
 variable "rails_frontend_port" {
   description = "The port the Rails frontend Docker container listens on for HTTP requests (e.g. 3000)"
   default = 3000

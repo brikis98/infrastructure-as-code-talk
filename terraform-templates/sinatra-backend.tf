@@ -1,3 +1,46 @@
+# The ECS Task that specifies what Docker containers we need to run the sinatra-backend
+resource "aws_ecs_task_definition" "sinatra_backend" {
+  family = "sinatra-backend"
+  container_definitions = <<EOF
+[
+  {
+    "name": "sinatra-backend",
+    "image": "${var.sinatra_backend_image}:${var.sinatra_backend_version}",
+    "cpu": 1024,
+    "memory": 768,
+    "essential": true,
+    "portMappings": [
+      {
+        "containerPort": ${var.sinatra_backend_port},
+        "hostPort": ${var.sinatra_backend_port},
+        "protocol": "tcp"
+      }
+    ],
+    "environment": [
+      {"name": "RACK_ENV", "value": "production"}
+    ]
+  }
+]
+EOF
+}
+
+# A long-running ECS Service for the sinatra-backend Task
+resource "aws_ecs_service" "sinatra_backend" {
+  name = "sinatra-backend"
+  cluster = "${aws_ecs_cluster.example_cluster.id}"
+  task_definition = "${aws_ecs_task_definition.sinatra_backend.arn}"
+  depends_on = ["aws_iam_role_policy.ecs_service_policy"]
+  desired_count = 2
+  deployment_minimum_healthy_percent = 50
+  iam_role = "${aws_iam_role.ecs_service_role.arn}"
+
+  load_balancer {
+    elb_name = "${aws_elb.sinatra_backend.id}"
+    container_name = "sinatra-backend"
+    container_port = "${var.sinatra_backend_port}"
+  }
+}
+
 # The load balancer that distributes load between the EC2 Instances
 resource "aws_elb" "sinatra_backend" {
   name = "sinatra-backend"
@@ -43,48 +86,5 @@ resource "aws_security_group" "sinatra_backend_elb" {
     to_port = "${var.sinatra_backend_port}"
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-# The ECS Task that specifies what Docker containers we need to run the sinatra-backend
-resource "aws_ecs_task_definition" "sinatra_backend" {
-  family = "sinatra-backend"
-  container_definitions = <<EOF
-[
-  {
-    "name": "sinatra-backend",
-    "image": "${var.sinatra_backend_image}:${var.sinatra_backend_version}",
-    "cpu": 1024,
-    "memory": 768,
-    "essential": true,
-    "portMappings": [
-      {
-        "containerPort": ${var.sinatra_backend_port},
-        "hostPort": ${var.sinatra_backend_port},
-        "protocol": "tcp"
-      }
-    ],
-    "environment": [
-      {"name": "RACK_ENV", "value": "production"}
-    ]
-  }
-]
-EOF
-}
-
-# A long-running ECS Service for the sinatra-backend Task
-resource "aws_ecs_service" "sinatra_backend" {
-  name = "sinatra-backend"
-  cluster = "${aws_ecs_cluster.example_cluster.id}"
-  task_definition = "${aws_ecs_task_definition.sinatra_backend.arn}"
-  depends_on = ["aws_iam_role_policy.ecs_service_policy"]
-  desired_count = 2
-  deployment_minimum_healthy_percent = 50
-  iam_role = "${aws_iam_role.ecs_service_role.arn}"
-
-  load_balancer {
-    elb_name = "${aws_elb.sinatra_backend.id}"
-    container_name = "sinatra-backend"
-    container_port = "${var.sinatra_backend_port}"
   }
 }
