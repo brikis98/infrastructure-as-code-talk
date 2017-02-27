@@ -13,8 +13,7 @@ your credits, running this code may cost you money.
 ### Initial setup
 
 1. Sign up for an [AWS account](https://aws.amazon.com/). If this is your first time using AWS Marketplace, head over
-   to the [ECS AMI Marketplace page](https://aws.amazon.com/marketplace/ordering?productId=4ce33fd9-63ff-4f35-8d3a-939b641f1931)
-   and accept the terms of service.
+   to the [ECS AMI Marketplace page](https://aws.amazon.com/marketplace/pp/B00U6QTYI2) and accept the terms of service.
 1. Install [Terraform](https://www.terraform.io/). Minimum version 0.7.0.
 1. `cd terraform-templates`
 1. Open `vars.tf`, set the environment variables specified at the top of the file, and fill in any other variables that
