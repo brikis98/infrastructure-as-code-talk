@@ -14,7 +14,7 @@ module "ecs_cluster" {
   source = "./ecs-cluster"
 
   name = "ecs-example"
-  size = 3
+  size = 5
   instance_type = "t2.micro"
   key_pair_name = "${var.key_pair_name}"
 
