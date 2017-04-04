@@ -66,5 +66,5 @@ variable "deployment_maximum_percent" {
 
 variable "deployment_minimum_healthy_percent" {
   description = "The lower limit, as a percentage of var.desired_count, of the number of running ECS Tasks that must remain running and healthy in a service during a deployment. Setting this to less than 100 means that during deployment, ECS may undeploy old instances of a Task before deploying new ones."
-  default = 50
+  default = 100
 }
