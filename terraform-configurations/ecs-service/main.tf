@@ -58,7 +58,7 @@ EOF
 # ]
 #
 data "template_file" "env_vars" {
-  count = "${length(var.num_env_vars)}"
+  count = "${var.num_env_vars}"
   template = <<EOF
 {"name": "${element(keys(var.env_vars), count.index)}", "value": "${lookup(var.env_vars, element(keys(var.env_vars), count.index))}"}
 EOF
