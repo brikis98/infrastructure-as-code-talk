@@ -94,7 +94,7 @@ module "rails_frontend" {
   num_env_vars = 2
   env_vars = "${map(
     "RACK_ENV", "production",
-    "SINATRA_BACKEND_PORT", "tcp://${module.sinatra_backend_elb.elb_dns_name}:${var.sinatra_backend_port}"
+    "SINATRA_BACKEND_PORT", "tcp://${module.sinatra_backend_elb.elb_dns_name}"
   )}"
 }
 
