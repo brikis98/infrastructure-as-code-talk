@@ -1,25 +1,26 @@
-# Configure the AWS Provider
-provider "aws" {
-  region = "${var.region}"
-}
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE AN ECS CLUSTER
+# ---------------------------------------------------------------------------------------------------------------------
 
-# The ECS Cluster
 resource "aws_ecs_cluster" "example_cluster" {
-  name = "${var.ecs_cluster_name}"
+  name = "${var.name}"
 }
 
-# The Auto Scaling Group that determines how many EC2 Instances we will be
-# running
+# ---------------------------------------------------------------------------------------------------------------------
+# DEPLOY AN AUTO SCALING GROUP (ASG)
+# Each EC2 Instance in the ASG will register as an ECS Cluster Instance.
+# ---------------------------------------------------------------------------------------------------------------------
+
 resource "aws_autoscaling_group" "ecs_cluster_instances" {
-  name = "ecs-cluster-instances"
-  min_size = 5
-  max_size = 5
+  name = "${var.name}"
+  min_size = "${var.size}"
+  max_size = "${var.size}"
   launch_configuration = "${aws_launch_configuration.ecs_instance.name}"
-  vpc_zone_identifier = ["${var.ecs_cluster_subnet_ids}"]
+  vpc_zone_identifier = ["${var.subnet_ids}"]
 
   tag {
     key = "Name"
-    value = "ecs-cluster-instances"
+    value = "${var.name}"
     propagate_at_launch = true
   }
 }
@@ -39,8 +40,8 @@ data "aws_ami" "ecs" {
 # The launch configuration for each EC2 Instance that will run in the ECS
 # Cluster
 resource "aws_launch_configuration" "ecs_instance" {
-  name_prefix = "ecs-instance-"
-  instance_type = "t2.micro"
+  name_prefix = "${var.name}-"
+  instance_type = "${var.instance_type}"
   key_name = "${var.key_pair_name}"
   iam_instance_profile = "${aws_iam_instance_profile.ecs_instance.name}"
   security_groups = ["${aws_security_group.ecs_instance.id}"]
@@ -50,7 +51,7 @@ resource "aws_launch_configuration" "ecs_instance" {
   # to the right ECS cluster
   user_data = <<EOF
 #!/bin/bash
-echo "ECS_CLUSTER=${var.ecs_cluster_name}" >> /etc/ecs/ecs.config
+echo "ECS_CLUSTER=${var.name}" >> /etc/ecs/ecs.config
 EOF
 
   # Important note: whenever using a launch configuration with an auto scaling
@@ -66,21 +67,13 @@ EOF
   }
 }
 
-# An IAM instance profile we can attach to an EC2 instance
-resource "aws_iam_instance_profile" "ecs_instance" {
-  name = "ecs-instance"
-  roles = ["${aws_iam_role.ecs_instance.name}"]
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE AN IAM ROLE FOR EACH INSTANCE IN THE CLUSTER
+# We export the IAM role ID as an output variable so users of this module can attach custom policies.
+# ---------------------------------------------------------------------------------------------------------------------
 
-  # aws_launch_configuration.ecs_instance sets create_before_destroy to true, which means every resource it depends on,
-  # including this one, must also set the create_before_destroy flag to true, or you'll get a cyclic dependency error.
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-# An IAM role that we attach to the EC2 Instances in ECS.
 resource "aws_iam_role" "ecs_instance" {
-  name = "ecs-instance"
+  name = "${var.name}"
   assume_role_policy = "${data.aws_iam_policy_document.ecs_instance.json}"
 
   # aws_iam_instance_profile.ecs_instance sets create_before_destroy to true, which means every resource it depends on,
@@ -101,8 +94,24 @@ data "aws_iam_policy_document" "ecs_instance" {
   }
 }
 
-# IAM policy we add to our EC2 Instance Role that allows an ECS Agent running
-# on the EC2 Instance to communicate with the ECS cluster
+# To attach an IAM Role to an EC2 Instance, you use an IAM Instance Profile
+resource "aws_iam_instance_profile" "ecs_instance" {
+  name = "${var.name}"
+  roles = ["${aws_iam_role.ecs_instance.name}"]
+
+  # aws_launch_configuration.ecs_instance sets create_before_destroy to true, which means every resource it depends on,
+  # including this one, must also set the create_before_destroy flag to true, or you'll get a cyclic dependency error.
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ATTACH IAM POLICIES TO THE IAM ROLE
+# The IAM policy allows an ECS Agent running on each EC2 Instance to communicate with the ECS scheduler.
+# ---------------------------------------------------------------------------------------------------------------------
+
 resource "aws_iam_role_policy" "ecs_cluster_permissions" {
   name = "ecs-cluster-permissions"
   role = "${aws_iam_role.ecs_instance.id}"
@@ -125,43 +134,16 @@ data "aws_iam_policy_document" "ecs_cluster_permissions" {
   }
 }
 
-# Security group that controls what network traffic is allowed to go in and out of each EC2 instance in the cluster
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE A SECURITY GROUP THAT CONTROLS WHAT TRAFFIC CAN GO IN AND OUT OF THE CLUSTER
+# Note that we only attach a few rules to this Security Group. However, we export the ID of the group as an output
+# variable so users of this module can attach custom rules.
+# ---------------------------------------------------------------------------------------------------------------------
+
 resource "aws_security_group" "ecs_instance" {
-  name = "ecs-instance"
-  description = "Security group for the EC2 instances in the ECS cluster"
+  name = "${var.name}"
+  description = "Security group for the EC2 instances in the ECS cluster ${var.name}"
   vpc_id = "${var.vpc_id}"
-
-  # Outbound Everything
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Inbound HTTP for the rails-frontend from anywhere
-  ingress {
-    from_port = "${var.rails_frontend_port}"
-    to_port = "${var.rails_frontend_port}"
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Inbound HTTP for the sinatra-backend from anywhere
-  ingress {
-    from_port = "${var.sinatra_backend_port}"
-    to_port = "${var.sinatra_backend_port}"
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Inbound SSH from anywhere
-  ingress {
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   # aws_launch_configuration.ecs_instance sets create_before_destroy to true, which means every resource it depends on,
   # including this one, must also set the create_before_destroy flag to true, or you'll get a cyclic dependency error.
@@ -170,41 +152,21 @@ resource "aws_security_group" "ecs_instance" {
   }
 }
 
-# An IAM Role that we attach to ECS Services. See the
-# aws_aim_role_policy below to see what permissions this role has.
-resource "aws_iam_role" "ecs_service_role" {
-  name = "ecs-service-role"
-  assume_role_policy = "${data.aws_iam_policy_document.ecs_service_role.json}"
+resource "aws_security_group_rule" "all_outbound_all" {
+  type = "egress"
+  from_port = 0
+  to_port = 0
+  protocol = "-1"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.ecs_instance.id}"
 }
 
-data "aws_iam_policy_document" "ecs_service_role" {
-  statement {
-    effect = "Allow"
-    actions = ["sts:AssumeRole"]
-    principals {
-      type = "Service"
-      identifiers = ["ecs.amazonaws.com"]
-    }
-  }
+resource "aws_security_group_rule" "all_inbound_ssh" {
+  type = "ingress"
+  from_port = 22
+  to_port = 22
+  protocol = "tcp"
+  cidr_blocks = ["${var.allow_ssh_from_cidr_blocks}"]
+  security_group_id = "${aws_security_group.ecs_instance.id}"
 }
 
-# IAM Policy that allows an ECS Service to communicate with EC2 Instances.
-resource "aws_iam_role_policy" "ecs_service_policy" {
-  name = "ecs-service-policy"
-  role = "${aws_iam_role.ecs_service_role.id}"
-  policy = "${data.aws_iam_policy_document.ecs_service_policy.json}"
-}
-
-data "aws_iam_policy_document" "ecs_service_policy" {
-  statement {
-    effect = "Allow"
-    resources = ["*"]
-    actions = [
-      "elasticloadbalancing:Describe*",
-      "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
-      "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
-      "ec2:Describe*",
-      "ec2:AuthorizeSecurityGroupIngress"
-    ]
-  }
-}

@@ -1,8 +1,14 @@
-# Terraform templates
+# Terraform configurations
 
-This folder contains [Terraform](https://www.terraform.io/) templates to deploy [Docker](https://www.docker.com/)
+This folder contains [Terraform](https://www.terraform.io/) configurations to deploy [Docker](https://www.docker.com/)
 images of the [rails-frontend](../rails-frontend) and [sinatra-backend](../sinatra-backend) example microservices using
 Amazon's [EC2 Container Service (ECS)](https://aws.amazon.com/ecs/).
+
+![Architecture](/_docs/architecture.png)
+
+
+
+
 
 ## Quick start
 
@@ -10,23 +16,38 @@ Amazon's [EC2 Container Service (ECS)](https://aws.amazon.com/ecs/).
 two ELBs. All of this qualifies for the [AWS Free Tier](https://aws.amazon.com/free/), but if you've already used up
 your credits, running this code may cost you money.
 
+
 ### Initial setup
 
 1. Sign up for an [AWS account](https://aws.amazon.com/). If this is your first time using AWS Marketplace, head over
    to the [ECS AMI Marketplace page](https://aws.amazon.com/marketplace/pp/B00U6QTYI2) and accept the terms of service.
-1. Install [Terraform](https://www.terraform.io/). Minimum version 0.7.0.
-1. `cd terraform-templates`
-1. Open `vars.tf`, set the environment variables specified at the top of the file, and fill in any other variables that
-   don't have a default.
+1. Install [Terraform](https://www.terraform.io/).
+1. `cd terraform-configurations`
+1. Open `vars.tf`, set the environment variables specified at the top of the file, and feel free to tweak any of the
+   other variables to your liking.
+   
 
 ### Deploying
 
+1. Configure your AWS credentials as [environment 
+   variables](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-environment):
+   
+    ```
+    export AWS_ACCESS_KEY_ID=...
+    export AWS_SECRET_ACCESS_KEY=...
+    ```
+   
+1. `terraform init`
+
 1. `terraform plan`
+
 1. If the plan looks good, run `terraform apply` to deploy the code into your AWS account.
+
 1. Wait a few minutes for everything to deploy. You can monitor the state of the ECS cluster using the [ECS
    Console](https://console.aws.amazon.com/ecs/home).
 
 After `terraform apply` completes, it will output the URLs of the ELBs of the rails-frontend and sinatra-backend apps.
+
 
 ### Deploying new versions
 
