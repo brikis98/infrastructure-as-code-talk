@@ -28,8 +28,11 @@ Here's an overview of the code:
    "service discovery" mechanism that works in both dev and prod.
 
 **Note**: This repo is for demonstration purposes only and should NOT be used to run anything important. For
-production-ready version of this code s and many other types of infrastructure (e.g. using a more robust service
-discovery mechanism such as [Consul](https://www.consul.io/)), check out [Gruntwork](http://www.gruntwork.io/).
+production-ready version of this code and many other types of infrastructure, check out 
+[Gruntwork](http://www.gruntwork.io/).
+
+
+
 
 ## How to run the microservices locally
 
@@ -49,9 +52,17 @@ The `docker-compose.yml` file mounts `rails-frontend` and `sinatra-backend` fold
 any changes you make to the apps on your host OS will automatically be reflected in the running Docker container. This
 lets you do iterative "make-a-change-and-refresh" style development.
 
-## How to deploy the microservices to production
+
+
+
+
+## How to deploy the microservices in AWS
 
 To deploy the microservices to your AWS account, see the [terraform-configurations README](./terraform-configurations).
+
+
+
+
 
 ## How to use your own Docker images
 
@@ -66,6 +77,10 @@ images](https://docs.docker.com/engine/userguide/containers/dockerimages/) and f
 1. `docker-compose.yml`: the `image` attribute for `rails_frontend` or `sinatra_backend`.
 2. `terraform-configurations/terraform.tfvars`: the `rails_frontend_image` and `rails_frontend_version` or
    `sinatra_backend_image` and `sinatra_backend_version` variables.
+
+
+
+
 
 ## More info
 
