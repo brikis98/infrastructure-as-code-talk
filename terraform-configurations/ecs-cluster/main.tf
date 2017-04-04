@@ -136,8 +136,7 @@ data "aws_iam_policy_document" "ecs_cluster_permissions" {
 
 # ---------------------------------------------------------------------------------------------------------------------
 # CREATE A SECURITY GROUP THAT CONTROLS WHAT TRAFFIC CAN GO IN AND OUT OF THE CLUSTER
-# Note that we only attach a few rules to this Security Group. However, we export the ID of the group as an output
-# variable so users of this module can attach custom rules.
+# We export the ID of the group as an output variable so users of this module can attach custom rules.
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_security_group" "ecs_instance" {
@@ -167,6 +166,17 @@ resource "aws_security_group_rule" "all_inbound_ssh" {
   to_port = 22
   protocol = "tcp"
   cidr_blocks = ["${var.allow_ssh_from_cidr_blocks}"]
+  security_group_id = "${aws_security_group.ecs_instance.id}"
+}
+
+resource "aws_security_group_rule" "all_inbound_ports" {
+  count = "${length(var.allow_inbound_ports_and_cidr_blocks)}"
+
+  type = "ingress"
+  from_port = "${element(keys(var.allow_inbound_ports_and_cidr_blocks), count.index)}"
+  to_port = "${element(keys(var.allow_inbound_ports_and_cidr_blocks), count.index)}"
+  protocol = "tcp"
+  cidr_blocks = ["${lookup(var.allow_inbound_ports_and_cidr_blocks, element(keys(var.allow_inbound_ports_and_cidr_blocks), count.index))}"]
   security_group_id = "${aws_security_group.ecs_instance.id}"
 }
 

@@ -24,6 +24,14 @@ module "ecs_cluster" {
   # To keep the example simple to test, we allow SSH access from anywhere. In real-world use cases, you should lock 
   # this down just to trusted IP addresses.
   allow_ssh_from_cidr_blocks = ["0.0.0.0/0"]
+
+  # Here, we allow the EC2 Instances in the ECS Cluster to recieve requests on the ports used by the rails-frontend
+  # and sinatra-backend. To keep the example simple to test, we allow these requests from any IP, but in real-world
+  # use cases, you should lock this down to just the IP addresses of the ELB and other trusted parties.
+  allow_inbound_ports_and_cidr_blocks = "${map(
+    var.rails_frontend_port, "0.0.0.0/0",
+    var.sinatra_backend_port, "0.0.0.0/0"
+  )}"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -73,7 +81,7 @@ module "rails_frontend" {
   ecs_cluster_id = "${module.ecs_cluster.ecs_cluster_id}"
 
   image = "${var.rails_frontend_image}"
-  version = "${var.rails_frontend_port}"
+  version = "${var.rails_frontend_version}"
   cpu = 1024
   memory = 768
   desired_count = 2
