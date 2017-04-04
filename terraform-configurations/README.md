@@ -12,9 +12,9 @@ Amazon's [EC2 Container Service (ECS)](https://aws.amazon.com/ecs/).
 
 ## Quick start
 
-**NOTE**: Following these instructions will deploy code into your AWS account, including four `t2.micro` instances and
-two ELBs. All of this qualifies for the [AWS Free Tier](https://aws.amazon.com/free/), but if you've already used up
-your credits, running this code may cost you money.
+**NOTE**: Following these instructions will deploy code into your AWS account, including several `t2.micro` instances 
+and two ELBs. All of this qualifies for the [AWS Free Tier](https://aws.amazon.com/free/), but if you've already used 
+up your credits, running this code may cost you money.
 
 
 ### Initial setup
