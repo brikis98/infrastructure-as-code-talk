@@ -7,36 +7,18 @@
 # AWS_SECRET_ACCESS_KEY
 
 # ---------------------------------------------------------------------------------------------------------------------
-# REQUIRED MODULE PARAMETERS
-# These variables must be passed in by the operator.
-# ---------------------------------------------------------------------------------------------------------------------
-
-variable "key_pair_name" {
-  description = "The name of the Key Pair that can be used to SSH to each EC2 instance in the ECS cluster"
-}
-
-variable "vpc_id" {
-  description = "The id of the VPC where the ECS cluster should run"
-}
-
-variable "elb_subnet_ids" {
-  description = "A list of subnets where the ELBs should be deployed"
-  type = "list"
-}
-
-variable "ecs_cluster_subnet_ids" {
-  description = "A list of subnets where the EC2 instances for the ECS cluster should be deployed"
-  type = "list"
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL MODULE PARAMETERS
 # These variables have defaults, but may be overridden by the operator.
 # ---------------------------------------------------------------------------------------------------------------------
 
 variable "region" {
-  description = "The region to apply these templates to (e.g. us-east-1)"
+  description = "The region where to deploy this code (e.g. us-east-1)."
   default = "us-east-1"
+}
+
+variable "key_pair_name" {
+  description = "The name of the Key Pair that can be used to SSH to each EC2 instance in the ECS cluster. Leave blank to not include a Key Pair."
+  default = ""
 }
 
 variable "rails_frontend_image" {
@@ -57,11 +39,6 @@ variable "sinatra_backend_image" {
 variable "sinatra_backend_version" {
   description = "The version (i.e. tag) of the Docker container to deploy for the Sinatra backend (e.g. latest, 12345)"
   default = "v1"
-}
-
-variable "ecs_cluster_name" {
-  description = "What to name the ECS Cluster"
-  default = "example-cluster"
 }
 
 variable "rails_frontend_port" {

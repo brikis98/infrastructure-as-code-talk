@@ -2,19 +2,25 @@
 
 This repo contains the sample code for the talk [Infrastructure-as-code: running microservices on AWS with Docker,
 Terraform, and ECS](http://www.ybrikman.com/writing/2016/03/31/infrastructure-as-code-microservices-aws-docker-terraform-ecs/).
+It includes a couple sample Dockerized microservices and the Terraform code to deploy them on AWS:
 
-It consists of:
+![Architecture](/_docs/architecture.png)
+
+Here's an overview of the code:
 
 1. An example [sinatra-backend microservice](./sinatra-backend) that just returns the text "Hello, World". This app
    includes a [Dockerfile](./sinatra-backend/Dockerfile) to package it as a Docker container.
-2. An example [rails-frontend microservice](./rails-frontend) that makes an HTTP call to the sinatra-backend and
+
+1. An example [rails-frontend microservice](./rails-frontend) that makes an HTTP call to the sinatra-backend and
    renders the result as HTML. This app includes a [Dockerfile](./rails-frontend/Dockerfile) to package it as a Docker
    container.
-3. A [docker-compose.yml](./docker-compose.yml) file to deploy both Docker containers so you can see how the two
+
+1. A [docker-compose.yml](./docker-compose.yml) file to deploy both Docker containers so you can see how the two
    microservices work together in the development environment. To allow the services to talk to each other, we are
    using [Docker Links](https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/) as a simple
    "service discovery" mechanism.
-4. [Terraform templates](./terraform-templates) to deploy both Docker containers on Amazon's
+
+1. [Terraform configurations](./terraform-configurations) to deploy both Docker containers on Amazon's
    [EC2 Container Service (ECS)](https://aws.amazon.com/ecs/) so you can see how the two microservices work together in
    the production environment. To allow the services to talk to each other, we deploy an [Elastic Load Balancer
    (ELB)](https://aws.amazon.com/elasticloadbalancing/) in front of each service and use Terraform to pass the ELB
@@ -22,7 +28,7 @@ It consists of:
    "service discovery" mechanism that works in both dev and prod.
 
 **Note**: This repo is for demonstration purposes only and should NOT be used to run anything important. For
-production-ready version of these templates and many other types of infrastructure (e.g. using a more robust service
+production-ready version of this code s and many other types of infrastructure (e.g. using a more robust service
 discovery mechanism such as [Consul](https://www.consul.io/)), check out [Gruntwork](http://www.gruntwork.io/).
 
 ## How to run the microservices locally
@@ -45,20 +51,20 @@ lets you do iterative "make-a-change-and-refresh" style development.
 
 ## How to deploy the microservices to production
 
-To deploy the microservices to your AWS account, see the [terraform-templates README](./terraform-templates).
+To deploy the microservices to your AWS account, see the [terraform-configurations README](./terraform-configurations).
 
 ## How to use your own Docker images
 
-By default, [docker-compose.yml](./docker-compose.yml) and the [terraform-templates](./terraform-templates) are using
-the `gruntwork/rails-frontend` and `gruntwork/sinatra-backend` Docker images. These are images I pushed to the [Gruntwork Docker
-Hub account](https://hub.docker.com/r/gruntwork/rails-example-app/) to make it easy for you to try this repo quickly.
-Obviously, in the real world, you'll want to use your own images instead.
+By default, [docker-compose.yml](./docker-compose.yml) and the [terraform-configurations](./terraform-configurations) 
+are using the `gruntwork/rails-frontend` and `gruntwork/sinatra-backend` Docker images. These are images I pushed to 
+the [Gruntwork Docker Hub account](https://hub.docker.com/r/gruntwork/rails-example-app/) to make it easy for you to 
+try this repo quickly. Obviously, in the real world, you'll want to use your own images instead.
 
 Follow Docker's documentation to [create your own Docker
 images](https://docs.docker.com/engine/userguide/containers/dockerimages/) and fill in the new image id and tag in:
 
 1. `docker-compose.yml`: the `image` attribute for `rails_frontend` or `sinatra_backend`.
-2. `terraform-templates/terraform.tfvars`: the `rails_frontend_image` and `rails_frontend_version` or
+2. `terraform-configurations/terraform.tfvars`: the `rails_frontend_image` and `rails_frontend_version` or
    `sinatra_backend_image` and `sinatra_backend_version` variables.
 
 ## More info

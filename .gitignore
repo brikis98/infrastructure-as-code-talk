@@ -20,8 +20,7 @@ rails-frontend/tmp
 # deployment. You may want to remove these gitignore entries for a real app.
 terraform.tfvars
 .terraform
-*.tfstate
-*.tfstate.backup
+*.tfstate*
 
 # Ignore OS X files
 .DS_Store
