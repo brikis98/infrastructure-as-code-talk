@@ -6,7 +6,60 @@ It includes a couple sample Dockerized microservices and the Terraform code to d
 
 ![Architecture](/_docs/architecture.png)
 
-Here's an overview of the code:
+**Note**: This repo is for demonstration purposes only and should NOT be used to run anything important. For
+production-ready version of this code and many other types of infrastructure, check out 
+[Gruntwork](http://www.gruntwork.io/).
+
+
+
+## Quick start
+
+
+### Running the microservices locally
+
+To run the rails-frontend and sinatra-backend on your local dev box:
+
+1. Install [Docker](https://www.docker.com/). 
+2. `docker-compose up`
+3. Test sinatra-backend by going to http://localhost:4567.
+4. Test the rails-frontend (and its connectivity to the sinatra-backend) by going to http://localhost:3000.
+
+The `docker-compose.yml` file mounts `rails-frontend` and `sinatra-backend` folders as volumes in each Docker image, so
+any changes you make to the apps on your host OS will automatically be reflected in the running Docker container. This
+lets you do iterative "make-a-change-and-refresh" style development.
+
+
+
+
+
+### Deploying the microservices in AWS
+
+To deploy the microservices to your AWS account, see the [terraform-configurations README](./terraform-configurations).
+
+
+
+
+
+### Using your own Docker images
+
+By default, [docker-compose.yml](./docker-compose.yml) and the [terraform-configurations](./terraform-configurations) 
+are using the `gruntwork/rails-frontend` and `gruntwork/sinatra-backend` Docker images. These are images I pushed to 
+the [Gruntwork Docker Hub account](https://hub.docker.com/r/gruntwork/rails-example-app/) to make it easy for you to 
+try this repo quickly. Obviously, in the real world, you'll want to use your own images instead.
+
+Follow Docker's documentation to [create your own Docker
+images](https://docs.docker.com/engine/userguide/containers/dockerimages/) and fill in the new image id and tag in:
+
+1. `docker-compose.yml`: the `image` attribute for `rails_frontend` or `sinatra_backend`.
+2. `terraform-configurations/terraform.tfvars`: the `rails_frontend_image` and `rails_frontend_version` or
+   `sinatra_backend_image` and `sinatra_backend_version` variables.
+
+
+
+
+## Overview of the repo
+
+Here's an overview of what's in this repo:
 
 1. An example [sinatra-backend microservice](./sinatra-backend) that just returns the text "Hello, World". This app
    includes a [Dockerfile](./sinatra-backend/Dockerfile) to package it as a Docker container.
@@ -26,58 +79,6 @@ Here's an overview of the code:
    (ELB)](https://aws.amazon.com/elasticloadbalancing/) in front of each service and use Terraform to pass the ELB
    URLs between services. We are using the same environment variables as Docker Links, so this acts as a simple
    "service discovery" mechanism that works in both dev and prod.
-
-**Note**: This repo is for demonstration purposes only and should NOT be used to run anything important. For
-production-ready version of this code and many other types of infrastructure, check out 
-[Gruntwork](http://www.gruntwork.io/).
-
-
-
-
-## How to run the microservices locally
-
-To run the rails-frontend and sinatra-backend on your local dev box:
-
-1. Install [Docker](https://www.docker.com/). If you're on OS X, you may also want to install
-   [docker-osx-dev](https://github.com/brikis98/docker-osx-dev), or the apps will take a long time to start up due
-   to the slowness of VirtualBox mounted folders (see [A productive development environment with Docker on OS
-   X](http://www.ybrikman.com/writing/2015/05/19/docker-osx-dev/)).
-2. `docker-compose up`
-3. Test sinatra-backend by going to [http://localhost:4567]() (or [http://dockerhost:4567]() if you're using
-   docker-osx-dev).
-4. Test the rails-frontend (and its connectivity to the sinatra-backend) by going to [http://localhost:3000]() (or
-   [http://dockerhost:3000]() if you're using docker-osx-dev).
-
-The `docker-compose.yml` file mounts `rails-frontend` and `sinatra-backend` folders as volumes in each Docker image, so
-any changes you make to the apps on your host OS will automatically be reflected in the running Docker container. This
-lets you do iterative "make-a-change-and-refresh" style development.
-
-
-
-
-
-## How to deploy the microservices in AWS
-
-To deploy the microservices to your AWS account, see the [terraform-configurations README](./terraform-configurations).
-
-
-
-
-
-## How to use your own Docker images
-
-By default, [docker-compose.yml](./docker-compose.yml) and the [terraform-configurations](./terraform-configurations) 
-are using the `gruntwork/rails-frontend` and `gruntwork/sinatra-backend` Docker images. These are images I pushed to 
-the [Gruntwork Docker Hub account](https://hub.docker.com/r/gruntwork/rails-example-app/) to make it easy for you to 
-try this repo quickly. Obviously, in the real world, you'll want to use your own images instead.
-
-Follow Docker's documentation to [create your own Docker
-images](https://docs.docker.com/engine/userguide/containers/dockerimages/) and fill in the new image id and tag in:
-
-1. `docker-compose.yml`: the `image` attribute for `rails_frontend` or `sinatra_backend`.
-2. `terraform-configurations/terraform.tfvars`: the `rails_frontend_image` and `rails_frontend_version` or
-   `sinatra_backend_image` and `sinatra_backend_version` variables.
-
 
 
 
