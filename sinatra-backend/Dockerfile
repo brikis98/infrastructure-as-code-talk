@@ -1,10 +1,9 @@
-FROM gliderlabs/alpine:3.4
-MAINTAINER Gruntwork <info@gruntwork.io>
+FROM alpine:3.6
+LABEL maintainer "Gruntwork <info@gruntwork.io>"
 
 # Install Sinatra
-RUN apk --update upgrade &&\
-    apk --no-cache add curl ca-certificates &&\
-    apk --no-cache add ruby ruby-dev &&\
+RUN apk --no-cache add curl ca-certificates && \
+    apk --no-cache add ruby ruby-dev && \
     gem install sinatra --no-ri --no-rdoc
 
 # Source code should be in the /usr/src/app folder

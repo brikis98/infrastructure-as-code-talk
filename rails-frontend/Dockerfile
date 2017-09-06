@@ -1,5 +1,5 @@
 FROM rails:4.2.6
-MAINTAINER Gruntwork <info@gruntwork.io>
+LABEL maintainer "Gruntwork <info@gruntwork.io>"
 
 # Source code should be in the /usr/src/app folder
 RUN mkdir -p /usr/src/app
