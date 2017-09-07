@@ -2,7 +2,8 @@ FROM alpine:3.6
 LABEL maintainer "Gruntwork <info@gruntwork.io>"
 
 # Install Sinatra
-RUN apk --no-cache add curl ca-certificates && \
+RUN apk --update upgrade && \
+    apk --no-cache add curl ca-certificates && \
     apk --no-cache add ruby ruby-dev && \
     gem install sinatra --no-ri --no-rdoc
 
