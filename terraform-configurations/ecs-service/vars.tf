@@ -15,7 +15,7 @@ variable "image" {
   description = "The Docker image to run in the ECS Task (e.g. foo/bar)."
 }
 
-variable "version" {
+variable "image_version" {
   description = "The version of the Docker image to run in the ECS Task. This is the the tag on the Docker image (e.g. latest or v3)."
 }
 

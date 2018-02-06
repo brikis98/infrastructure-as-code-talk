@@ -45,7 +45,7 @@ module "sinatra_backend" {
   ecs_cluster_id = "${module.ecs_cluster.ecs_cluster_id}"
   
   image = "${var.sinatra_backend_image}"
-  version = "${var.sinatra_backend_version}"
+  image_version = "${var.sinatra_backend_version}"
   cpu = 1024
   memory = 768
   desired_count = 2
@@ -81,7 +81,7 @@ module "rails_frontend" {
   ecs_cluster_id = "${module.ecs_cluster.ecs_cluster_id}"
 
   image = "${var.rails_frontend_image}"
-  version = "${var.rails_frontend_version}"
+  image_version = "${var.rails_frontend_version}"
   cpu = 1024
   memory = 768
   desired_count = 2

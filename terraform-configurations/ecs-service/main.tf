@@ -32,7 +32,7 @@ resource "aws_ecs_task_definition" "task" {
 [
   {
     "name": "${var.name}",
-    "image": "${var.image}:${var.version}",
+    "image": "${var.image}:${var.image_version}",
     "cpu": ${var.cpu},
     "memory": ${var.memory},
     "essential": true,
