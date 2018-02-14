@@ -97,7 +97,7 @@ data "aws_iam_policy_document" "ecs_instance" {
 # To attach an IAM Role to an EC2 Instance, you use an IAM Instance Profile
 resource "aws_iam_instance_profile" "ecs_instance" {
   name = "${var.name}"
-  roles = ["${aws_iam_role.ecs_instance.name}"]
+  role = "${aws_iam_role.ecs_instance.name}"
 
   # aws_launch_configuration.ecs_instance sets create_before_destroy to true, which means every resource it depends on,
   # including this one, must also set the create_before_destroy flag to true, or you'll get a cyclic dependency error.
